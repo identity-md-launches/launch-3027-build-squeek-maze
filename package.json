@@ -1,0 +1,24 @@
+{
+  "name": "squeek-maze",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A canvas arcade adventure for Squeekchain. No runtime dependencies.",
+  "scripts": {
+    "dev": "node scripts/serve.mjs .",
+    "build": "node scripts/build.mjs",
+    "art": "node scripts/generate-art.mjs",
+    "preview": "node scripts/serve.mjs dist",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test test/*.test.mjs",
+    "test:browser": "node test/browser.mjs"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "playwright": "1.56.1",
+    "@axe-core/playwright": "4.10.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

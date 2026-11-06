@@ -1,0 +1,7 @@
+# Path budget: this file <=512 bytes; generated dependencies/caches only.
+**/node_modules/
+**/.cache/
+**/.npm/
+**/npm-cache/
+test/scratch/
+# dist/ is a required delivery and deliberately remains included.

@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#faf6ec" />
+    <title>Squeek Maze | A tiny hamster. A mighty adventure.</title>
+    <meta
+      name="description"
+      content="Help Squeektoshi snack through 50 mazes, dodge the snakes, and chase a high score. A free arcade game powered by a real Squeekchain hamster."
+    />
+    <meta property="og:title" content="Squeek Maze | The Squeekchain arcade" />
+    <meta
+      property="og:description"
+      content="50 mazes. One brave hamster. A whole lot of peanuts. Play Squeek Maze."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="./og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/png" href="./favicon.png" />
+    <link
+      rel="preload"
+      href="./nunito-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href="./assets/styles.css" />
+    <script type="module" src="./assets/main.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to game</a>
+    <canvas id="background" aria-hidden="true"></canvas>
+    <div class="site-shell">
+      <header class="site-header">
+        <a class="brand" href="#" aria-label="Squeek Maze home">
+          <canvas
+            id="brand-hamster"
+            width="44"
+            height="44"
+            aria-hidden="true"
+          ></canvas>
+          <span
+            >Squeekchain<span class="brand-sub"
+              >A hamster-powered arcade</span
+            ></span
+          >
+        </a>
+        <nav aria-label="Main navigation">
+          <button class="nav-button" id="help-button" type="button">
+            How to play
+          </button>
+          <a class="nav-button" href="#leaderboard"
+            ><canvas
+              data-icon="trophy"
+              width="20"
+              height="20"
+              aria-hidden="true"
+            ></canvas
+            ><span>Leaderboard</span></a
+          >
+        </nav>
+      </header>
+
+      <main id="main" tabindex="-1">
+        <div class="page-heading">
+          <div>
+            <h1>
+              Squeek <span>Maze</span
+              ><span class="title-dot" aria-hidden="true">.</span>
+            </h1>
+            <p>A little hamster. A maze full of adventure.</p>
+          </div>
+          <div class="live-status" id="live-status" data-state="checking">
+            <canvas
+              data-icon="wheel"
+              width="24"
+              height="24"
+              aria-hidden="true"
+            ></canvas>
+            <div>
+              <span class="status-name"
+                >Squeektoshi is
+                <strong id="status-label">checking in</strong></span
+              ><span class="status-detail" id="status-detail"
+                >Connecting to the real hamster</span
+              >
+            </div>
+            <span class="status-dot" aria-hidden="true"></span>
+          </div>
+        </div>
+
+        <div class="play-layout" id="game-view">
+          <section class="arcade" aria-label="Squeek Maze game">
+            <div class="scoreboard">
+              <div class="stat">
+                <span>Level</span
+                ><strong id="level-value">01 <small>/ 50</small></strong>
+              </div>
+              <div class="stat">
+                <span>Score</span><strong id="score-value">0</strong>
+              </div>
+              <div class="stat best-stat">
+                <span>Best</span><strong id="best-value">0</strong>
+              </div>
+              <div class="stat lives-stat">
+                <span>Lives</span
+                ><span id="lives-value" role="img" aria-label="3 lives"
+                  ><canvas
+                    id="lives-canvas"
+                    width="72"
+                    height="24"
+                    aria-hidden="true"
+                  ></canvas
+                ></span>
+              </div>
+            </div>
+            <div class="board-wrap" id="board-wrap">
+              <canvas
+                id="maze"
+                width="840"
+                height="840"
+                tabindex="0"
+                aria-label="Maze game. Move with arrow keys, WASD, swipe, or the direction buttons. Press P or Escape to pause."
+                aria-describedby="game-instructions"
+              ></canvas>
+
+              <div class="game-overlay" id="game-overlay">
+                <section
+                  class="overlay-screen"
+                  id="menu-screen"
+                  aria-labelledby="menu-title"
+                >
+                  <canvas
+                    id="menu-hamster"
+                    class="menu-hamster"
+                    width="160"
+                    height="140"
+                    aria-hidden="true"
+                  ></canvas>
+                  <h2 id="menu-title">Ready, little runner?</h2>
+                  <p>Chase peanuts. Outsmart snakes.</p>
+                  <button
+                    class="button button-primary play-button"
+                    id="play-button"
+                    type="button"
+                  >
+                    <span class="play-triangle" aria-hidden="true"></span>Play
+                    Squeek Maze
+                  </button>
+                  <a class="overlay-link" href="#leaderboard"
+                    >View leaderboard <span aria-hidden="true">↗</span></a
+                  >
+                  <span class="menu-meta"
+                    >50 levels <span>·</span> 3 lives <span>·</span> One brave
+                    hamster</span
+                  >
+                </section>
+                <section
+                  class="overlay-screen"
+                  id="countdown-screen"
+                  aria-labelledby="countdown-title"
+                  hidden
+                >
+                  <span class="countdown-number" id="countdown-number">3</span>
+                  <h2 id="countdown-title">Level 1</h2>
+                  <p id="countdown-detail">Peanut patch · 1 snake</p>
+                  <span class="menu-meta">Get your paws ready</span>
+                </section>
+                <section
+                  class="overlay-screen"
+                  id="paused-screen"
+                  aria-labelledby="paused-title"
+                  hidden
+                >
+                  <canvas
+                    data-icon="pause"
+                    class="large-icon"
+                    width="44"
+                    height="44"
+                    aria-hidden="true"
+                  ></canvas>
+                  <h2 id="paused-title">A little breather.</h2>
+                  <p>Your peanuts can wait.</p>
+                  <button
+                    class="button button-primary"
+                    id="resume-button"
+                    type="button"
+                  >
+                    Resume game
+                  </button>
+                  <button class="overlay-link" id="finish-button" type="button">
+                    Finish run
+                  </button>
+                </section>
+                <section
+                  class="overlay-screen"
+                  id="complete-screen"
+                  aria-labelledby="complete-title"
+                  hidden
+                >
+                  <canvas
+                    id="celebration-hamster"
+                    class="menu-hamster"
+                    width="160"
+                    height="140"
+                    aria-hidden="true"
+                  ></canvas>
+                  <h2 id="complete-title">Peanut perfection!</h2>
+                  <p id="complete-detail">Level complete · +100 bonus</p>
+                  <span class="menu-meta">The next maze is waiting</span>
+                </section>
+                <section
+                  class="overlay-screen"
+                  id="hit-screen"
+                  aria-labelledby="hit-title"
+                  hidden
+                >
+                  <h2 id="hit-title">Shake it off, Squeek.</h2>
+                  <p id="hit-detail">2 lives left. You’ve got this.</p>
+                  <span class="menu-meta">Back to the burrow in a moment</span>
+                </section>
+                <section
+                  class="overlay-screen result-screen"
+                  id="result-screen"
+                  aria-labelledby="result-title"
+                  hidden
+                >
+                  <h2 id="result-title">Game over, little legend.</h2>
+                  <p id="result-detail">
+                    Every great run starts with a peanut.
+                  </p>
+                  <div class="final-score">
+                    <strong id="final-score">0</strong
+                    ><span
+                      >Final score <span id="final-level">· Level 1</span></span
+                    >
+                  </div>
+                  <form id="score-form">
+                    <label for="player-name"
+                      >Your name on the leaderboard</label
+                    >
+                    <div class="name-row">
+                      <input
+                        id="player-name"
+                        name="playerName"
+                        type="text"
+                        autocomplete="nickname"
+                        maxlength="18"
+                        placeholder="e.g. PeanutPilot"
+                        required
+                        aria-describedby="save-message"
+                      /><button
+                        class="button button-save"
+                        id="save-button"
+                        type="submit"
+                      >
+                        Save
+                      </button>
+                    </div>
+                    <p class="form-message" id="save-message" role="status">
+                      Saved on this browser only.
+                    </p>
+                  </form>
+                  <button
+                    class="button button-primary"
+                    id="again-button"
+                    type="button"
+                  >
+                    Play again
+                  </button>
+                  <button class="overlay-link" id="menu-button" type="button">
+                    Back to menu
+                  </button>
+                </section>
+              </div>
+            </div>
+            <div class="game-bottom">
+              <div class="progress-row">
+                <span id="progress-label">Peanuts collected</span
+                ><span id="progress-value">0 / 0</span>
+              </div>
+              <progress
+                id="level-progress"
+                max="100"
+                value="0"
+                aria-label="Peanuts collected this level"
+              ></progress>
+              <div class="game-controls">
+                <span class="game-hint" id="game-hint"
+                  ><span class="tiny-dot" aria-hidden="true"></span>A
+                  snack-sized adventure awaits</span
+                >
+                <div class="utility-controls">
+                  <button
+                    class="icon-button"
+                    id="sound-button"
+                    type="button"
+                    aria-label="Enable sound"
+                    aria-pressed="false"
+                    title="Enable sound"
+                  >
+                    <canvas
+                      id="sound-icon"
+                      data-icon="muted"
+                      width="20"
+                      height="20"
+                      aria-hidden="true"
+                    ></canvas></button
+                  ><button
+                    class="icon-button"
+                    id="pause-button"
+                    type="button"
+                    aria-label="Pause game"
+                    title="Pause game (P)"
+                    disabled
+                  >
+                    <canvas
+                      data-icon="pause"
+                      width="20"
+                      height="20"
+                      aria-hidden="true"
+                    ></canvas>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="touch-controls" aria-label="Direction controls">
+              <button type="button" data-direction="up" aria-label="Move up">
+                ↑
+              </button>
+              <button
+                type="button"
+                data-direction="left"
+                aria-label="Move left"
+              >
+                ←
+              </button>
+              <button
+                type="button"
+                data-direction="down"
+                aria-label="Move down"
+              >
+                ↓
+              </button>
+              <button
+                type="button"
+                data-direction="right"
+                aria-label="Move right"
+              >
+                →
+              </button>
+            </div>
+          </section>
+
+          <aside class="sidebar" aria-label="Game guide">
+            <section class="guide-section">
+              <h2>Good things come to little hamsters.</h2>
+              <p>Eat every peanut to find your way to the next maze.</p>
+              <ul class="maze-mates">
+                <li>
+                  <span class="mate-art"
+                    ><canvas
+                      id="peanut-icon"
+                      width="44"
+                      height="44"
+                      aria-hidden="true"
+                    ></canvas></span
+                  ><span
+                    ><strong>Peanuts</strong><span>The good stuff</span></span
+                  ><b>+10</b>
+                </li>
+                <li>
+                  <span class="mate-art bean-art"
+                    ><canvas
+                      id="bean-icon"
+                      width="44"
+                      height="44"
+                      aria-hidden="true"
+                    ></canvas></span
+                  ><span
+                    ><strong>Power beans</strong
+                    ><span>Snack on snakes</span></span
+                  ><b>+50</b>
+                </li>
+                <li>
+                  <span class="mate-art snake-art"
+                    ><canvas
+                      id="snake-icon"
+                      width="44"
+                      height="44"
+                      aria-hidden="true"
+                    ></canvas></span
+                  ><span
+                    ><strong>Snakes</strong><span>Only when powered</span></span
+                  ><b>+200</b>
+                </li>
+              </ul>
+              <p class="guide-footnote">
+                Clear a level for a level × 100 bonus.
+              </p>
+            </section>
+            <section class="controls-guide" id="game-instructions">
+              <h3>Find your flow</h3>
+              <div class="key-guide">
+                <span class="keyboard-art" aria-hidden="true"
+                  ><kbd>↑</kbd
+                  ><span><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd></span></span
+                >
+                <p>Arrow keys or WASD<span>Swipe on mobile</span></p>
+              </div>
+              <p class="pause-guide"><kbd>P</kbd> or <kbd>Esc</kbd> to pause</p>
+            </section>
+            <section class="wheel-note">
+              <canvas
+                id="wheel-hamster"
+                width="72"
+                height="72"
+                aria-hidden="true"
+              ></canvas>
+              <h3>Powered by<br />a real hamster</h3>
+              <p>When Squeektoshi runs on his wheel, you move 10% faster.</p>
+              <a
+                href="https://squeekchain.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Meet Squeekchain <span aria-hidden="true">↗</span
+                ><span class="sr-only"> (opens in a new tab)</span></a
+              >
+            </section>
+          </aside>
+        </div>
+
+        <section
+          class="leaderboard-view"
+          id="leaderboard-view"
+          aria-labelledby="leaderboard-title"
+          hidden
+        >
+          <button class="text-button" id="back-button" type="button">
+            ← Back to game
+          </button>
+          <div class="leaderboard-heading">
+            <canvas
+              id="leaderboard-trophy"
+              data-icon="trophy"
+              width="56"
+              height="56"
+              aria-hidden="true"
+            ></canvas>
+            <h2 id="leaderboard-title" tabindex="-1">
+              The peanut hall of fame
+            </h2>
+            <p>The top 10 runs on this browser. Every peanut counts.</p>
+          </div>
+          <div id="empty-scores" class="empty-scores">
+            <h3>Your legend starts here.</h3>
+            <p>Finish a run and save your name to claim the first spot.</p>
+            <button
+              class="button button-primary"
+              id="leaderboard-play"
+              type="button"
+            >
+              Play your first run
+            </button>
+          </div>
+          <div class="table-wrap" id="score-table-wrap" hidden>
+            <table>
+              <caption class="sr-only">
+                Top 10 Squeek Maze scores stored on this browser
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">Rank</th>
+                  <th scope="col">Player</th>
+                  <th scope="col">Level</th>
+                  <th scope="col">Score</th>
+                </tr>
+              </thead>
+              <tbody id="score-rows"></tbody>
+            </table>
+          </div>
+          <p class="leaderboard-note">
+            Local scores stay on this device and can be removed by clearing
+            browser data.
+          </p>
+        </section>
+        <p class="under-game" id="under-game">
+          <span class="tiny-dot" aria-hidden="true"></span>Free to play, with no
+          wallet or downloads.
+        </p>
+      </main>
+
+      <footer>
+        <span>Made for little adventures.</span
+        ><a
+          href="https://squeekchain.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Powered by Squeekchain <span aria-hidden="true">↗</span
+          ><span class="sr-only"> (opens in a new tab)</span></a
+        ><button id="motion-button" type="button">Pause animation</button>
+      </footer>
+    </div>
+    <p
+      class="sr-only"
+      id="announcer"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></p>
+    <dialog id="help-dialog" aria-labelledby="help-title">
+      <div class="dialog-heading">
+        <h2 id="help-title">A field guide to snacking</h2>
+        <button
+          class="icon-button"
+          id="close-help"
+          type="button"
+          aria-label="Close instructions"
+        >
+          ×
+        </button>
+      </div>
+      <p>
+        Guide Squeektoshi through all 50 mazes. Collect every peanut to unlock
+        the next level.
+      </p>
+      <ol>
+        <li>
+          <strong>Keep those paws moving.</strong> Use arrow keys, WASD, swipe,
+          or the direction buttons. Turns are queued until the next open
+          corridor.
+        </li>
+        <li>
+          <strong>Go nuts for power beans.</strong> Glowing beans let you eat
+          snakes for 5 seconds. That drops to 3.5 seconds on levels 31–40 and 3
+          seconds on levels 41–50.
+        </li>
+        <li>
+          <strong>Mind the snakes.</strong> You have 3 lives for the whole run.
+          Later levels bring up to 4 faster snakes and fewer beans.
+        </li>
+        <li>
+          <strong>Take a breather.</strong> Press P or Escape to pause.
+          Switching away from the page pauses an active game too.
+        </li>
+      </ol>
+      <p>
+        Your score stays local to this browser. A fresh, running Squeektoshi
+        gives you a 10% movement boost.
+      </p>
+      <button class="button button-primary" id="got-it-button" type="button">
+        Got it, let’s play
+      </button>
+    </dialog>
+    <noscript
+      ><p class="noscript">Enable JavaScript to play Squeek Maze.</p></noscript
+    >
+  </body>
+</html>
